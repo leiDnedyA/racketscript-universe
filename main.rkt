@@ -2,11 +2,11 @@
 
 (require (for-syntax racketscript/base
                      syntax/parse)
-         "./universe_modules/universe-primitives.rkt"
-         "./universe_modules/jscommon.rkt"
-         "./universe_modules/encode-decode.rkt"
-         "./universe_modules/debug-tools.rkt"
-         "./universe_modules/universe-server.rkt")
+         "./src/universe-primitives.rkt"
+         "./src/jscommon.rkt"
+         "./src/encode-decode.rkt"
+         "./src/debug-tools.rkt"
+         "./src/universe-server.rkt")
 
 (provide on-mouse
          on-tick
