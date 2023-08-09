@@ -1,6 +1,6 @@
 <img src="https://raw.githubusercontent.com/racketscript/racketscript/master/logo.svg" align="right" height="110" />
 
-# RacketScript-Universe
+# RacketScript Universe
 
 [![MIT licensed](https://img.shields.io/badge/license-MIT-blue.svg)](LICENSE-MIT) [![RacketScript](https://img.shields.io/badge/RacketScript-0000FF?logo=github)](https://github.com/racketscript/racketscript) [![PeerJS](https://img.shields.io/badge/PeerJS-e96151?logo=github)](https://github.com/peers/peerjs) 
 
