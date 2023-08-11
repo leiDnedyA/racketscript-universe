@@ -21,14 +21,12 @@
 ; - create clause for user to pass in
 ;   root element for logging GUI
 
-#|
-  Add to logs:
-  u: current universe state
-  Events to log:
-  - mail sending:
-    "broadcast failed to ~a" iworld name
-    "~s not on the list" iworld name
-|#
+; Add to logs:
+; u: current universe state
+; Events to log:
+; - mail sending:
+;   "broadcast failed to ~a" iworld name
+;   "~s not on the list" iworld name
 
 (provide universe
 

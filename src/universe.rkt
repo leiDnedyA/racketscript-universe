@@ -39,11 +39,6 @@
          key=?
          mouse=?)
 
-; TODO: 
-; (port) clause for big-bang
-; (name) clause for big-bang
-; figure out a way to encode racket primitives to send between peers
-
 (define *default-frames-per-second* 70)
 
 (define (make-big-bang init-world handlers)
