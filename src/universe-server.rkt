@@ -33,6 +33,7 @@
          on-new
          on-msg
          on-disconnect
+         server-id
          
         ;  peerjs
          Peer)
@@ -78,6 +79,8 @@
     (:= #js.this.-peer-init-tasks ($/array))
     (:= #js.this.-active-iworlds ($/array))
     (:= #js.this.-disconnect-tasks ($/array))
+
+    (:= #js.this.-peer-id DEFAULT-UNIVERSE-ID)
 
     (:= #js.this.-idle       #t)
     (:= #js.this.-stopped    #t)
@@ -210,7 +213,7 @@
     [init-peer-connection
      (λ (id)
        #:with-this this
-       (define peer (new (Peer DEFAULT-UNIVERSE-ID)))
+       (define peer (new (Peer #js.this.-peer-id)))
        (:= #js.this.-peer peer)
        (#js.peer.on #js"open"
          (λ ()
@@ -307,6 +310,18 @@
      [invoke       (λ (state evt)
                      #:with-this this
                      (#js.u.change-state (cb state #js.evt.iWorld))
+                     (void))])))
+
+(define (server-id id)
+  (λ (u)
+    ($/obj
+     [name         #js"server-id"]
+     [register     (λ ()
+                     #:with-this this
+                     (:= #js.u.-peer-id (js-string id))
+                     (void))]
+     [deregister   (λ ()
+                     #:with-this this
                      (void))])))
 
 (define (on-msg cb)

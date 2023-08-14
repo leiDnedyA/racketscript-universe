@@ -22,6 +22,7 @@
          on-new
          on-msg
          on-disconnect
+         server-id
          universe
 
          package?

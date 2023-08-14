@@ -36,6 +36,7 @@ In practice, this library only differs from @hyperlink["https://docs.racket-lang
 
 Differences from the original @racket[big-bang] API include:
 @nested[#:style 'inset]{@itemlist[
+          @item{@racket[big-bang] takes and optional @italic{#:dom-root} keyword argument to specify a root element for the canvas that big-bang draws to.}
           @item{@racket[register] takes a @racket[peer-id] argument instead of an @racket[ip-expr].}
           @item{No @racket[on-pad] clause (as of now).}
           @item{No @racket[record?] clause.}
@@ -54,7 +55,9 @@ Differences from the original @racket[big-bang] API include:
 
 @italic{Original @racket[universe] docs.}
 
-@nested[#:style 'inset]{@itemlist[@item{No @racket[port] clause.}
+@nested[#:style 'inset]{@itemlist[
+                                  @item{@racket[universe] takes and optional @italic{#:dom-root} keyword argument to specify a root element to insert the logging gui into.}
+                                  @item{No @racket[port] clause.}
                                   @item{No @racket[state] clause (yet).}
                                   @item{No @racket[to-string] clause (yet).}
                                   @item{No @racket[check-with] clause (yet).}]}
