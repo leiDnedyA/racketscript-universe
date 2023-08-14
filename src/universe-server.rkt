@@ -47,24 +47,25 @@
 (define *default-frames-per-second* 70)
 
 ;; Universe server
-(define (make-universe init-state handlers)
-  (new (Universe init-state handlers)))
+(define (make-universe init-state handlers gui-root)
+  (new (Universe init-state handlers (if ($/binop != gui-root $/null)
+                                         gui-root #js*.document.body))))
 
-(define (universe init-state . handlers)
-  ($> (make-universe init-state handlers)
+(define (universe init-state #:dom-root [gui-root $/null] . handlers)
+  ($> (make-universe init-state handlers gui-root)
       (setup)
       (start)))
 
 (define-proto Universe
-  (λ (init-state handlers)
+  (λ (init-state handlers gui-root)
     #:with-this this
     (:= #js.this.state      init-state)
     (:= #js.this.interval   (/ 1000 *default-frames-per-second*))
     (:= #js.this.handlers   handlers)
-    
+
     (:= #js.this.is-universe? #true)
 
-    (:= #js.this.gui (server-gui #js*.document.body
+    (:= #js.this.gui (server-gui gui-root
                                 ;  #js.this.stop
                                 ;  (λ () ($> #js.this.stop #js.this.setup #js.this.start))
                                  )) ;; TODO: allow user to pass root element? & Fix stop/restart cb's

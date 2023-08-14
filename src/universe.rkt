@@ -41,22 +41,25 @@
 
 (define *default-frames-per-second* 70)
 
-(define (make-big-bang init-world handlers)
-  (new (BigBang init-world handlers)))
+(define (make-big-bang init-world handlers dom-root)
+  (new (BigBang init-world handlers (if ($/binop != dom-root $/null)
+                                         dom-root #js*.document.body))))
 
-(define (big-bang init-world . handlers)
-  ($> (make-big-bang init-world handlers)
+(define (big-bang init-world #:dom-root [dom-root $/null] . handlers)
+  ($> (make-big-bang init-world handlers dom-root)
       (setup)
       (start)))
 
 (define-proto BigBang
-  (λ (init-world handlers)
+  (λ (init-world handlers dom-root)
     #:with-this this
     (:= #js.this.world      init-world)
     (:= #js.this.interval   (/ 1000 *default-frames-per-second*))
     (:= #js.this.handlers   handlers)
 
     (:= #js.this.is-universe? #false)
+
+    (:= #js.this.dom-root dom-root)
 
     (:= #js.this.-active-handlers         ($/obj))
     (:= #js.this.-world-change-listeners  ($/array))
@@ -85,7 +88,7 @@
      (:= #js.this.-canvas    canvas)
      (:= #js.this.-context   ctx)
 
-     (#js.document.body.appendChild canvas)
+     (#js.this.dom-root.appendChild canvas)
      (#js.canvas.focus)
 
      (#js.this.register-handlers)
