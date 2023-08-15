@@ -1,6 +1,8 @@
 #lang scribble/manual
-@require[@for-label[racket/base
-                    2htdp/universe]]
+@(require (for-label racket/base
+                     ; "../main.rkt"
+                     2htdp/universe
+                     ))
 
 @title{RacketScript Universe}
 @author[(author+email "Ayden Diel" "aydendiel@gmail.com")]
@@ -18,13 +20,17 @@ Experimental implementation of Racket's @racket[2htdp/universe] library for @sec
 @section[#:tag "getting-started"]{Getting Started}
 Since this library is just an implementation of @hyperlink["https://docs.racket-lang.org/teachpack/2htdpuniverse.html"]{2htdp/universe}, use those docs as your main reference. These docs will contain info about how racketscript-universe works and how it differs from the original, but won't contain an in-depth API description.
 
+@margin-note*{
+    See @hyperlink["https://github.com/leiDnedyA/rs-universe-server-test/blob/master/src/app.rkt"]{this example on github} for one way of setting up your project.
+}
+
+To use the library, you need to be running a separate server (@racket[universe]) and client (@racket[big-bang]) instance at the same time, both in separate browser windows. You then need to pass the server's peer id (which is currently "server" by default but will be changed) to the client's @racket[big-bang] call, and a connection will be established.
+
 @section[#:tag "how-it-works"]{How does it work?}
 
 We use @hyperlink["https://peerjs.com/"]{PeerJS} under the hood to mimic client-server behavior where both the client and server run in browser tabs. In reality everything is done with peer connections.
 
 @margin-note{PeerJS's @hyperlink["https://peerjs.com/peerserver"]{PeerServer Cloud Serrvice} handles all of the traffic behind the scenes so that you don't have to worry about it.}
-
-To use the library, you need to be running a separate server (@racket[universe]) and client (@racket[big-bang]) instance at the same time, both in separate browser windows. You then need to pass the server's peer id (which is currently "server" by default but will be changed) to the client's @racket[big-bang] call, and a connection will be established. See @hyperlink["https://github.com/leiDnedyA/rs-universe-server-test/blob/master/src/app.rkt"]{this example} for one method of doing so where the user loads the page, and then picks whether to start a server or client session.
 
 @section[#:tag "differences"]{Differences from 2htdp/universe}
 
@@ -56,8 +62,14 @@ Differences from the original @racket[big-bang] API include:
 @italic{Original @racket[universe] docs.}
 
 @nested[#:style 'inset]{@itemlist[
+                                  @item{The @racket[server-id] clause can be used with @racket[universe] to specify its peer id (which gets passed into the @racket[register] clause of a @racket[big-bang] call). Note that two servers should not have the same peer id, or problems will occur.}
                                   @item{@racket[universe] takes and optional @italic{#:dom-root} keyword argument to specify a root element to insert the logging gui into.}
                                   @item{No @racket[port] clause.}
                                   @item{No @racket[state] clause (yet).}
                                   @item{No @racket[to-string] clause (yet).}
                                   @item{No @racket[check-with] clause (yet).}]}
+
+@defform[(server-id peer-id)#:contracts ([peer-id string?])]{
+    Lets you specify the @racket[peer-id] of the @racket[universe] that you're initializing. Use this @racket[peer-id] with the @racket[register] clause in a @racket[big-bang] call to connect a client.
+}
+
