@@ -75,19 +75,19 @@
 
     (:= #js.this.-idle       #t)
     (:= #js.this.-stopped    #t)
-    (:= #js.this.-events     ($/array)))
+    (:= #js.this.-events     ($/array))
+    
+    (define canvas  (#js.document.createElement #js"canvas"))
+    (define ctx     (#js.canvas.getContext #js"2d"))
+    (#js.canvas.setAttribute #js"tabindex" 1)
+    (#js.canvas.setAttribute #js"style" #js"outline: none")
+    (:= #js.this.-canvas    canvas)
+    (:= #js.this.-context   ctx))
   [setup
    (λ ()
      #:with-this this
-     ;; Create canvas DOM element and add to screen
-     (define canvas  (#js.document.createElement #js"canvas"))
-     (define ctx     (#js.canvas.getContext #js"2d"))
-
-     (#js.canvas.setAttribute #js"tabindex" 1)
-     (#js.canvas.setAttribute #js"style" #js"outline: none")
-
-     (:= #js.this.-canvas    canvas)
-     (:= #js.this.-context   ctx)
+     
+     (define canvas #js.this.-canvas)
 
      (#js.this.dom-root.appendChild canvas)
      (#js.canvas.focus)
@@ -97,7 +97,7 @@
      (if #js.this.-uses-peer
          (#js.this.init-peer-connection)
          (void))
-
+    
      ;; Set canvas size as the size of first world
      (define draw-handler ($ #js.this.-active-handlers #js"to-draw"))
      (unless draw-handler
@@ -146,6 +146,7 @@
                   [-stopped #t]
                   [-idle    #t])
      (#js.this.deregister-handlers)
+     (#js.this.-canvas.remove)
      (set-object! #js.this
                   [-active-handlers ($/obj)]
                   [handlers '()]))]
@@ -225,6 +226,8 @@
               ; raw evt must be checked 1st; bc handler will be undefined
               [(equal? #js.evt.type #js"raw")
                (#js.evt.invoke #js.this.world evt)]
+              [($/binop === handler $/undefined)
+               (begin (#js*.console.warn #js"WARNING: processing event w/ undefined handler.") (void))]
               [handler (#js.handler.invoke #js.this.world evt)]
               [else
                (#js.console.warn "ignoring unknown/unregistered event type: " evt)]))
@@ -506,19 +509,18 @@
 (define (mouse=? m1 m2)
   (equal? m1 m2))
 
-(define (on-receive cb) ;; EXPERIMENTAL
+(define (on-receive cb)
   (λ (bb)
     (define on-receive-evt ($/obj [type #js"on-receive"]))
     ($/obj
      [name         #js"on-receive"]
      [register     (λ ()
                      #:with-this this
-                     
+
                      (#js.bb.add-peer-init-task
                       (λ (peer conn)
                         (:= #js.this.conn-data-listener
                             (λ (data)
-                              ;; Figure out a way to encode/decode data to send Racket primitives
                               (#js.bb.queue-event ($/obj [type #js.on-receive-evt.type]
                                                          [msg data]))))
                         
@@ -527,21 +529,20 @@
                         (:= #js.this.package-listener
                             (λ (message)
                               #:with-this this
-                              ;; TODO: Implement encoding for racket primitives
                               (#js.conn.send (encode-data message))
                               0))
    
                         (#js.bb.add-package-listener #js.this.package-listener)))
 
                      0)]
-     [deregister   (λ () ;; TODO: implement this
+     [deregister   (λ ()
                      #:with-this this
                      (define peer #js.bb.-peer)
-                     (define destroy-peer?
+                     (define should-destroy-peer?
                        (if ($/typeof peer "undefined")
                            #f
                            (not #js.peer.disconnected)))
-                     (if destroy-peer?
+                     (if should-destroy-peer?
                          (begin 
                            (#js.peer.disconnect)
                            (#js.peer.destroy))
@@ -551,10 +552,9 @@
      [invoke       (λ (world evt)
                      #:with-this this
                      (#js.bb.change-world (cb world (decode-data #js.evt.msg)))
-                     #t
-                     )])))
+                     #t)])))
 
-(define (register server-id) ;; Experimental
+(define (register server-id)
   (λ (bb)
     ($/obj
      [name         #js"register"]
@@ -563,7 +563,7 @@
                      (:= #js.bb.-server-id server-id)
                      (:= #js.bb.-uses-peer #t)
                      0)]
-     [deregister   (λ () ;; TODO: implement this
+     [deregister   (λ ()
                      #:with-this this
                      (define conn #js.bb.-conn)
                      (define conn-open?
@@ -586,4 +586,5 @@
       [register    (λ ()
                      #:with-this this
                      (:= #js.bb.-peer-name (js-string name))
-                     (void))])))
+                     (void))]
+      [deregister  (λ () (void))])))
