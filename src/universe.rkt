@@ -2,6 +2,7 @@
 
 (require (for-syntax racketscript/base
                      syntax/parse)
+         racketscript/htdp/image
          "universe-primitives.rkt"
          "jscommon.rkt"
          "encode-decode.rkt"
@@ -38,9 +39,15 @@
          iworld=?
 
          key=?
-         mouse=?)
+         mouse=?
+         (rename-out [text0 text])
+         rkt-list)
 
 (define *default-frames-per-second* 70)
+
+(define text0 text)
+(define (rkt-list element)
+  (list element))
 
 (define (make-big-bang init-world handlers dom-root)
   (new (BigBang init-world handlers (if ($/binop != dom-root $/null)
@@ -306,6 +313,9 @@
                     (#js.img.render ctx (half width) (half height))
 
                     #f)])))
+
+;; (define to-draw-sample (to-draw (lambda (ws)
+;;                                  )))
 
 (define (on-tick cb rate)
   (λ (bb-u)
