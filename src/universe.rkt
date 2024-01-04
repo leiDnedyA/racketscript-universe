@@ -45,7 +45,11 @@
 
 (define *default-frames-per-second* 70)
 
-(define text0 text)
+(define (text0 txt size color)
+  (text (js-string->string txt)
+        size
+        (js-string->string color)))
+
 (define (rkt-list element)
   (list element))
 
